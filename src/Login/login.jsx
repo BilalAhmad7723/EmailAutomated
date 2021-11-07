@@ -3,14 +3,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Button, Container, Col, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import "../Login/login.scss";
+import { useHistory } from "react-router-dom";
+
 export default function Login() {
+  const history = useHistory();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
-
+  const onSubmit = (data) => {
+    if (data.email === "admin@admin.com" && data.password === "admin") {
+      console.log("Login !!!! Success");
+      history.push("/app");
+    } else {
+      console.log("Wrong credientials");
+    }
+  };
+  const errormsg = {
+    fontSize: `11px`,
+    color: `red`,
+    marginLeft: `10px`,
+    fontWeight: `700`,
+  };
   return (
     <section className="ftco-section">
       <Container fluid>
@@ -37,9 +52,10 @@ export default function Login() {
                   >
                     We'll never share your email with anyone else.
                   </Form.Text>
-                  {errors.email && <span>This field is required</span>}
+                  {errors.email && (
+                    <span style={errormsg}>This field is required</span>
+                  )}
                 </Form.Group>
-
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                   <Form.Control
                     type="password"
@@ -47,7 +63,9 @@ export default function Login() {
                     style={{ borderRadius: `14px` }}
                     {...register("password", { required: true })}
                   />{" "}
-                  {errors.password && <span>This field is required</span>}
+                  {errors.password && (
+                    <span style={errormsg}>This field is required</span>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Button

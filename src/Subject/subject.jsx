@@ -8,7 +8,6 @@ import {
   Table,
   Modal,
 } from "react-bootstrap";
-import "../Subject/subject.css";
 import { Popconfirm, message } from "antd";
 function confirm(e) {
   console.log(e);
@@ -40,10 +39,16 @@ function EditModal(props) {
     </Modal>
   );
 }
-function Subject() {
+function Subject(props) {
+  
   const [modalShow, setModalShow] = useState(false);
   return (
-    <Container className="mt-3">
+    <Container fluid>
+      <section>
+                    <div
+                className="site-layout-background"
+                style={{ padding: 24, minHeight: 360 }}
+              >
       <section className="mb-5">
         <Form>
           <Row>
@@ -59,7 +64,7 @@ function Subject() {
         </Form>
       </section>
       <section>
-        <Table striped bordered hover size="sm" responsive>
+        <Table striped table-success="true" bordered hover size="sm" responsive>
           <thead>
             <tr>
               <th>#</th>
@@ -177,6 +182,8 @@ function Subject() {
         </Table>
       </section>
       <EditModal show={modalShow} onHide={() => setModalShow(false)} />
+      </div>
+      </section>
     </Container>
   );
 }
