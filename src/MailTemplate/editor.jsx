@@ -1,30 +1,107 @@
-import { React, useRef } from "react";
+import { React, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Container } from "react-bootstrap";
 import { Editor } from "@tinymce/tinymce-react";
 import "antd/dist/antd.css";
 import "../MailTemplate/editor.css";
 import { SendOutlined } from "@ant-design/icons";
+import { message } from 'antd';
 import { useState } from "react";
+import axios from "axios";
 
 export default function MailEditor() {
-  const [selectedFile, setSelectedFile] = useState();
-  //const [isFilePicked, setIsFilePicked] = useState(false);
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
-    console.log(selectedFile);
-    //	setIsSelected(true);
+  const [isFilePicked, setIsFilePicked] = useState(false);
+  const [data, setData] = useState({});
+  const [fileD, setfileD] = useState("");
+  const editorRef = useRef(null);
+  const ref = useRef();
+  const changeHandler = (event) => {   
+    event.target.files[0] && setIsFilePicked(true);
+    if (isFilePicked) return;
+    else fileread(event.target.files[0]);
   };
 
-  const editorRef = useRef(null);
+  const fileread = (file) => {
+    var reader = new FileReader();
+    var textFile = /text.*/;
+    let filedata = "";
+    if (file.type.match(textFile) ) {
+      reader.onload = function (event) {
+        filedata = event.target.result;
+        setfileD(filedata);
+      };
+    } else {
+      filedata =
+        "It doesn't seem to be a text file!";
+        message.error(filedata);
+    }
+    reader.readAsText(file);
+  };
+
   const log = () => {
-    if (editorRef.current) {
-      console.log(editorRef.current.getContent());
-      let text_data = editorRef.current.getContent();
-      console.log(text_data);
+    let data = FinalData();
+    axios
+    .post("http://localhost:5050/email/emailSending", data)
+    .then((res) => {
+      console.log(res.data);
+      Notifymsg(res.data.message);
+      ref.current.value = "";
+      editorRef.current.setContent("");
+      setfileD("");
+    });
+  };
+
+  const Notifymsg = (msg) => {
+    message.success(msg);
+  };
+  const Notifyerrormsg = (msg) => {
+    message.error(msg);
+  };
+
+  const FinalData = () => {
+    let finalD = [];
+    let text_data = editorRef.current.getContent();
+    if(text_data !== ""){
+      let mailFromFile = fileD.split(",");
+      mailFromFile.forEach((element) => {
+        let rad = RandomFunc(0, data.data.length - 1);
+        finalD.push({
+          id: element.replace(/(\r\n|\n|\r)/gm, ""),
+          subject: data.data[rad].subject,
+          mail: text_data,
+        });
+      });
+      return finalD;
+    }
+    else{
+      Notifyerrormsg("Please Write Some Maill in Text Area!!")
     }
   };
 
+  function RandomFunc(min, max) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = () => {
+    const headers = { "Content-Type": "application/json" };
+    const endpoint = "http://localhost:5050/api";
+    axios
+      .get(endpoint, { headers })
+      .then((response) => {
+        setData({
+          data: response.data,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <Container fluid>
       <section>
@@ -41,6 +118,7 @@ export default function MailEditor() {
                 className="form-control"
                 type="file"
                 id="formFile"
+                ref={ref}
                 onChange={changeHandler}
               />
             </div>
@@ -80,9 +158,9 @@ export default function MailEditor() {
                   className="form-control btn btn-primary submit px-3"
                   type="submit"
                   style={{ borderRadius: `10px` }}
+                  onClick={log}
                 >
-                  <SendOutlined style={{ verticalAlign: 0 }} onClick={log} />{" "}
-                  Send
+                  <SendOutlined style={{ verticalAlign: 0 }} /> Send
                 </Button>
               </div>
             </div>

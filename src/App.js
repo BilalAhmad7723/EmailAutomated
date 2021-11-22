@@ -6,11 +6,10 @@ import "./App.css";
 export default function App({ component: Component }) {
   return (
     <Route
-   
-    render={(routeProps) => (
-      <Layout>
-        <Component {...routeProps} />
-      </Layout>
+      render={(routeProps) => (
+        <Layout>
+          <Component {...routeProps} />
+        </Layout>
     )}
   />
   );
