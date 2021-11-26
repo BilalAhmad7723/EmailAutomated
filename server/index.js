@@ -5,7 +5,7 @@ let bodyParser = require('body-parser');
 let mongoDb = require('./db');
 const SubjectRoute = require('./subject.route');
 const EmailRoute = require('./email.routes');
-
+const path = require();
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoDb.database, {
     useUnifiedTopology: true,
@@ -27,7 +27,14 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use('/api', SubjectRoute);
 app.use('/email', EmailRoute);
+app.use(express.static(path.join(__dirname, 'build')));
 
+app.use(express.static("build"));
+app.use(express.static("storage"));
+
+app.get('*', (req, res) => {
+  const path = require('path');
+  res.sendFile(path.resolve(__dirname,"src", 'build', 'index.html'));
 
 const port = process.env.PORT || 5050;
 app.listen(port, () => {
