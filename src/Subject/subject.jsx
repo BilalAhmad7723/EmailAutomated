@@ -1,4 +1,6 @@
 import { React, useState, useEffect } from "react";
+import http from "../apiConfig";
+import { useForm } from "react-hook-form";
 import {
   Form,
   Col,
@@ -8,28 +10,50 @@ import {
   Table,
   Modal,
 } from "react-bootstrap";
-import { Empty } from "antd";
-import { Popconfirm, message,Badge } from "antd";
-import axios from "axios";
-
+import { Empty,Spin } from "antd";
+import { Popconfirm, message, Badge } from "antd";
 
 function Subject() {
+  const [loading, setloading] = useState(false);
   const [modalShow, setModalShow] = useState(false);
   const [subject, setsubject] = useState("");
   const [subjectno, setsubjectno] = useState("");
   const [data, setData] = useState({});
   const [seldata, setseldata] = useState({});
-  const [UpdateSub, setUpdateSub] = useState("")
+  const { register, handleSubmit } = useForm();
+  const onSubmit = (data) => {
+    if(data.subject && data.subjectid )
+    {
+      onUpdate(data);
+      setModalShow(false);
+    }
+   else {
+    setModalShow(false);
+    Notifyerrormsg("Please Enter Data To Update!!!");
+   }
+  };
+
+  const onUpdate = (data) => {
+      http.put('/update-subject/' + seldata._id, data)
+      .then((res) => {
+        console.log('Todo updated' + res)
+        refreshPage();
+      }).catch((error) => {
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     getData();
   }, []);
 
   const getData = () => {
+    setloading(true);
     const headers = { "Content-Type": "application/json" };
-    const endpoint = "http://localhost:5050/api";
-    axios
-      .get(endpoint, { headers })
+    const endpoint = "";
+    http.get(endpoint, { headers })
       .then((response) => {
+        setloading(false);
         setData({
           data: response.data,
         });
@@ -38,42 +62,56 @@ function Subject() {
         console.log(error);
       });
   };
+
   const refreshPage = () => {
     window.location.reload(false);
   };
-  const update = (props) => {
-   props.onHide();
-  }
+  const Notifyerrormsg = (msg) => {
+    message.error(msg);
+  };
   function EditModal(props) {
     return (
-      
       <Modal
         {...props}
         size="md"
-        aria-labelledby="contained-modal-title-vcenter"
+        aria-labelledby="EditModalTitle"
         backdrop="static"
         keyboard={false}
         centered
       >
-        <Badge.Ribbon text={seldata.subject}>
-        <Modal.Header>
-          <Modal.Title id="contained-modal-title-vcenter">Subject</Modal.Title>
-        </Modal.Header>
+        <Badge.Ribbon text={seldata.subjectid + ":" + seldata.subject}>
+          <Modal.Header>
+            <Modal.Title id="EditModal">Subject</Modal.Title>
+          </Modal.Header>
         </Badge.Ribbon>
-        <Modal.Body>
-        <Form.Control placeholder="Subject" value={UpdateSub} onChange={(e) => setUpdateSub(e.target.value)} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={() => update(props)}>Update</Button>
-          <Button onClick={props.onHide}>Close</Button>
-        </Modal.Footer>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Modal.Body>
+            <Row>
+              <Col lg={12} sm={12} className="mb-3">
+                <Form.Control
+                  placeholder="Subject No."
+                  type="Number"
+                  {...register("subjectid")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col lg={12} sm={12} className="mb-3">
+                <Form.Control placeholder="Subject"  {...register("subject")} />
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="submit">Update</Button>
+            <Button onClick={props.onHide}>Close</Button>
+          </Modal.Footer>
+        </form>
       </Modal>
-      
     );
   }
   function confirm(e) {
-    axios
-      .delete("http://localhost:5050/api/delete-subject/" + e._id)
+    http
+      .delete("/delete-subject/" + e._id)
       .then((res) => {
         getData();
       })
@@ -93,8 +131,8 @@ function Subject() {
       subjectid: subjectno,
       subject: subject,
     };
-    axios
-      .post("http://localhost:5050/api/create-subject", subjectObject)
+    http
+      .post("/create-subject", subjectObject)
       .then((res) => {
         console.log(res.data);
       });
@@ -102,9 +140,9 @@ function Subject() {
     setsubjectno(" ");
     refreshPage();
   };
-
   return (
     <Container fluid>
+       <Spin spinning={loading}  tip="Loading Subjects..." size="large">
       <section>
         <div
           className="site-layout-background"
@@ -172,7 +210,7 @@ function Subject() {
                             onClick={() => {
                               setModalShow(true);
                               setseldata(item);
-                            } }
+                            }}
                           >
                             Edit
                           </Button>
@@ -190,14 +228,14 @@ function Subject() {
                             </Button>
                           </Popconfirm>
                         </td>
-                        <EditModal
-                          show={modalShow}
-                          onHide={() => setModalShow(false)}
-                        />
                       </tr>
                     );
                   })}
                 </tbody>
+                <EditModal
+                  show={modalShow}
+                  onHide={() => setModalShow(false)}
+                />
               </Table>
             ) : (
               <Empty />
@@ -205,6 +243,7 @@ function Subject() {
           </section>
         </div>
       </section>
+      </Spin>
     </Container>
   );
 }

@@ -1,55 +1,68 @@
 import { React, useRef, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Container } from "react-bootstrap";
 import { Editor } from "@tinymce/tinymce-react";
-import "antd/dist/antd.css";
-import "../MailTemplate/editor.css";
 import { SendOutlined } from "@ant-design/icons";
-import { message } from 'antd';
+import { message,Spin } from "antd";
+import { useHistory } from "react-router-dom";
 import { useState } from "react";
+import "../MailTemplate/editor.css";
 import axios from "axios";
+import http from "../apiConfig";
 
 export default function MailEditor() {
+
+  const history = useHistory();
+  const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [data, setData] = useState({});
+  const [loading, setloading] = useState(false);
   const [fileD, setfileD] = useState("");
   const editorRef = useRef(null);
-  const ref = useRef();
-  const changeHandler = (event) => {   
-    event.target.files[0] && setIsFilePicked(true);
+  const fileRef = useRef();
+  const changeHandler = (event) => {
+    setSelectedFile(event.target.files[0]) && setIsFilePicked(true);
     if (isFilePicked) return;
     else fileread(event.target.files[0]);
   };
 
   const fileread = (file) => {
-    var reader = new FileReader();
-    var textFile = /text.*/;
-    let filedata = "";
-    if (file.type.match(textFile) ) {
-      reader.onload = function (event) {
-        filedata = event.target.result;
-        setfileD(filedata);
-      };
-    } else {
-      filedata =
-        "It doesn't seem to be a text file!";
+    if (file !== undefined) {
+      var reader = new FileReader();
+      var textFile = /text.*/;
+      let filedata = "";
+      if (file.type.match(textFile)) {
+        reader.onload = function (event) {
+          filedata = event.target.result;
+          setfileD(filedata);
+        };
+      } else {
+        filedata = "It doesn't seem to be a text file!";
         message.error(filedata);
-    }
-    reader.readAsText(file);
+        fileRef.current.value = "";
+        setSelectedFile(undefined);
+      }
+      reader.readAsText(file);
+    } else setfileD("");
   };
 
   const log = () => {
-    let data = FinalData();
-    axios
-    .post("http://localhost:5050/email/emailSending", data)
-    .then((res) => {
-      console.log(res.data);
-      Notifymsg(res.data.message);
-      ref.current.value = "";
-      editorRef.current.setContent("");
-      setfileD("");
-    });
-  };
+    setloading(true);
+    let data = FinalData(selectedFile);
+    if (data.length > 0) {
+      axios
+        .post("http://localhost:5050/email/emailSending", data)
+        .then((res) => {
+          setloading(false);
+          Notifymsg("Mails Has been send Successfully")
+          history.push("/success");
+        })
+        .catch((error) => {
+          console.log(error);
+          Notifyerrormsg("Mail Sending Failed!");
+          history.push("/error ");
+        });
+    }
+};
 
   const Notifymsg = (msg) => {
     message.success(msg);
@@ -60,21 +73,28 @@ export default function MailEditor() {
 
   const FinalData = () => {
     let finalD = [];
-    let text_data = editorRef.current.getContent();
-    if(text_data !== ""){
-      let mailFromFile = fileD.split(",");
-      mailFromFile.forEach((element) => {
-        let rad = RandomFunc(0, data.data.length - 1);
-        finalD.push({
-          id: element.replace(/(\r\n|\n|\r)/gm, ""),
-          subject: data.data[rad].subject,
-          mail: text_data,
+    let mailFromFile = fileD.split("\r\n");
+    if (mailFromFile[0] !== "") {
+      let text_data = editorRef.current.getContent();
+      if (text_data !== "") {
+        mailFromFile.forEach((element) => {
+          let rad = RandomFunc(0, data.data.length - 1);
+          let delay = rad.toString().concat("000");
+          finalD.push({
+            id: element,
+            subject: data.data[rad].subject,
+            mail: text_data,
+            time: delay,
+          });
         });
-      });
+        return finalD;
+      } else {
+        Notifyerrormsg("Please Write Some Maill in Text Area!!!");
+        return finalD;
+      }
+    } else {
+      Notifyerrormsg("Please Select a text file first having Emails!!!");
       return finalD;
-    }
-    else{
-      Notifyerrormsg("Please Write Some Maill in Text Area!!")
     }
   };
 
@@ -83,15 +103,14 @@ export default function MailEditor() {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-
   useEffect(() => {
     getData();
   }, []);
 
   const getData = () => {
     const headers = { "Content-Type": "application/json" };
-    const endpoint = "http://localhost:5050/api";
-    axios
+    const endpoint = "";
+    http
       .get(endpoint, { headers })
       .then((response) => {
         setData({
@@ -102,8 +121,10 @@ export default function MailEditor() {
         console.log(error);
       });
   };
+  
   return (
     <Container fluid>
+      <Spin spinning={loading}  tip="Sending Mail..." size="large">
       <section>
         <div
           className="site-layout-background"
@@ -118,11 +139,12 @@ export default function MailEditor() {
                 className="form-control"
                 type="file"
                 id="formFile"
-                ref={ref}
+                ref={fileRef}
                 onChange={changeHandler}
               />
             </div>
           </section>
+        
           <section>
             <div className="mb-3">
               <label htmlFor="formFile" className="form-label">
@@ -167,6 +189,7 @@ export default function MailEditor() {
           </section>
         </div>
       </section>
+      </Spin>
     </Container>
   );
 }

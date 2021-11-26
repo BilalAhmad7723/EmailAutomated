@@ -1,6 +1,5 @@
 import { React,useState,useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
+import http from "../apiConfig";
 import { Container, Card, Row } from "react-bootstrap";
 import "../Dashboard/dash.css";
 export default function Dashboard() {
@@ -13,11 +12,8 @@ export default function Dashboard() {
 
   const getData = () => {
     const headers = { "Content-Type": "application/json" };
-
-    const endpoint = "http://localhost:5050/api";
-
-    axios
-      .get(endpoint, { headers })
+    const endpoint = "";
+    http.get(endpoint, { headers })
       .then((response) => {
         setData({
           data: response.data,
@@ -27,7 +23,7 @@ export default function Dashboard() {
         console.log(error);
       });
   };
-  console.log(data)
+  
   return (
     <Container fluid>
       <section>
@@ -40,7 +36,7 @@ export default function Dashboard() {
               <Card bg="success" border="success" text="white" className="mb-2">
                 <Card.Header>Total Subjects</Card.Header>
                 <Card.Body>
-                  <Card.Title>12</Card.Title>
+                  <Card.Title>{data.data ? data.data.length : 0 }</Card.Title>
                   <Card.Text>System Subject</Card.Text>
                 </Card.Body>
                 <Card.Footer>View More</Card.Footer>
@@ -48,7 +44,7 @@ export default function Dashboard() {
             </div>
             <div className="col-lg-3 col-sm-6">
               <Card bg="light" border="light" text="dark" className="mb-2">
-                <Card.Header># of Send Emails</Card.Header>
+                <Card.Header>No of Send Emails</Card.Header>
                 <Card.Body>
                   <Card.Title>1110</Card.Title>
                   <Card.Text>System Emails</Card.Text>
@@ -60,7 +56,7 @@ export default function Dashboard() {
               <Card bg="info" border="info" text="light" className="mb-2">
                 <Card.Header>Total </Card.Header>
                 <Card.Body>
-                  <Card.Title>12</Card.Title>
+                  <Card.Title>{data.data ? data.data.length : 0 }</Card.Title>
                   <Card.Text>System Subject</Card.Text>
                 </Card.Body>
                 <Card.Footer>View More</Card.Footer>

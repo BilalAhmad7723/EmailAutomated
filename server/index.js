@@ -3,8 +3,6 @@ let mongoose = require('mongoose');
 let cors = require('cors');
 let bodyParser = require('body-parser');
 let mongoDb = require('./db');
-const upload = require('express-fileupload');
-
 const SubjectRoute = require('./subject.route');
 const EmailRoute = require('./email.routes');
 
@@ -27,7 +25,6 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(cors());
-app.use(upload());
 app.use('/api', SubjectRoute);
 app.use('/email', EmailRoute);
 

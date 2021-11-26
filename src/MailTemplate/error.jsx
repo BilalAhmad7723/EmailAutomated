@@ -1,14 +1,19 @@
 import { React } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { Result, Button, Typography } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
-
+import { useHistory } from "react-router-dom";
 const { Paragraph, Text } = Typography;
 
 export default function ErrorPage() {
+
+  const history = useHistory();
   const Middle = {
-    padding: `9em 0`,
+    padding: `13em 0`,
+    background: `aliceblue`
+  };
+  const back = () => {
+    history.push("/app/mail");
   };
   return (
     <Container fluid>
@@ -17,7 +22,7 @@ export default function ErrorPage() {
           status="error"
           title="Submission Failed"
           subTitle="Please check and modify the following information before resubmitting."
-          extra={[<Button key="Back">Back Again</Button>]}
+          extra={[<Button key="Back" onClick={() => back()}>Back Again</Button>]}
         >
           <div className="desc">
             <Paragraph>
