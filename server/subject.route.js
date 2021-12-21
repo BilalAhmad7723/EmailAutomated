@@ -10,6 +10,7 @@ router.route('/').get((req, res, next) => {
       if (error) {
         return next(error)
       } else {
+        res.set('Access-Control-Allow-Origin', '*');
         res.json(data)
       }
     })
@@ -21,7 +22,7 @@ router.route('/create-subject').post((req, res, next) => {
     if (error) {
       return next(error)
     } else {
-      console.log(data)
+      res.set('Access-Control-Allow-Origin', '*');
       res.json(data)
     }
   })
@@ -33,6 +34,7 @@ router.route('/edit-subject/:id').get((req, res, next) => {
     if (error) {
       return next(error)
     } else {
+      res.set('Access-Control-Allow-Origin', '*');
       res.json(data)
     }
   })
@@ -46,8 +48,8 @@ router.route('/update-subject/:id').put((req, res, next) => {
     if (error) {
       return next(error);
     } else {
-      res.json(data)
-      console.log('Subject updated')
+      res.set('Access-Control-Allow-Origin', '*');
+      res.json(data);
     }
   })
 })
@@ -57,6 +59,7 @@ router.route('/delete-subject/:id').delete((req, res, next) => {
     if (error) {
       return next(error);
     } else {
+      res.set('Access-Control-Allow-Origin', '*');
       res.status(200).json({
         msg: data
       })
@@ -64,8 +67,21 @@ router.route('/delete-subject/:id').delete((req, res, next) => {
   })
 })
 
-router.route('/emailSending').post((req, res, next) => {
-
+router.route('/authentication').post((req, res, next) => {
+  const bodyData = req.body;
+  try {
+    let response = {
+      msg : "Login Successfully!!!",
+      token : bodyData
+    }
+    res.set('Access-Control-Allow-Origin', '*');
+    res.json(response)
+  } catch (error) {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.status(500).send({
+      message: "Invalid User!",
+    });
+  }
 })
 
 

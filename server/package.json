@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "start-watch": "nodemon index.js",
-    "dev": "concurrently \"npm run start-watch\" \"cd.. && npm start\"",
+    "dev": "concurrently \"npm run start-watch\" \"cd frontend && npm start\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,7 +19,8 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "mongoose": "^6.0.12",
-    "nodemailer": "^6.7.1"
+    "nodemailer": "^6.7.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "concurrently": "^6.4.0",
