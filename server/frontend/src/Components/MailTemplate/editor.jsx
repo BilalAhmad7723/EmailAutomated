@@ -57,7 +57,7 @@ export default function MailEditor() {
     }
     if (receiver.length > 0) {
       axios
-        .post("http://localhost:5050/email/emailSending", data)
+        .post("https://email-temp.herokuapp.com/email/emailSending", data)
         .then((res) => {
           setloading(false);
           Notifymsg("Mails Has been send Successfully")
