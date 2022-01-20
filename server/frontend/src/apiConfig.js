@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const http = axios.create({
-  baseURL: 'http://localhost:5050', //Release Base URL
+  baseURL: 'https://email-temp.herokuapp.com', //Release Base URL
   headers: {'Content-Type': 'application/json'},
 });
 
