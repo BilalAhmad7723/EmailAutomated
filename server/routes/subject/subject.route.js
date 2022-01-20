@@ -5,7 +5,6 @@ let todoSchema = require('./subject');
 
 
 router.route('/').get((req, res, next) => {
-  // eslint-disable-next-line array-callback-return
   todoSchema.find((error, data) => {
       if (error) {
         return next(error)

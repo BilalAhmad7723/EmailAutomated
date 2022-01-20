@@ -1,5 +1,5 @@
 import { React,useState,useEffect } from "react";
-import http from "../apiConfig";
+import http from "../../apiConfig";
 import { Container, Card, Row } from "react-bootstrap";
 import "../Dashboard/dash.css";
 export default function Dashboard() {
@@ -12,7 +12,7 @@ export default function Dashboard() {
 
   const getData = () => {
     const headers = { "Content-Type": "application/json" };
-    const endpoint = "";
+    const endpoint = "/api";
     http.get(endpoint, { headers })
       .then((response) => {
         setData({

@@ -2,9 +2,10 @@ let express = require('express');
 let mongoose = require('mongoose');
 let cors = require('cors');
 let bodyParser = require('body-parser');
-let mongoDb = require('./db');
-const SubjectRoute = require('./subject.route');
-const EmailRoute = require('./email.routes');
+let mongoDb = require('./connection/db');
+const SubjectRoute = require('./routes/subject/subject.route');
+const EmailRoute = require('./routes/email/email.routes');
+const AccountRoute = require('./routes/accounts/account.route');
 const app = express();
 const path = require("path");
 mongoose.Promise = global.Promise;
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500
 
 app.use('/api', SubjectRoute);
 app.use('/email', EmailRoute);
+app.use('/account', AccountRoute);
 
 // --------------------------deployment------------------------------
 

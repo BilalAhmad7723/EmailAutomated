@@ -4,25 +4,27 @@ require("dotenv").config();
 
 router.route("/emailSending").post((req, res, next) => {
   try {
-    
-    const bodyData = req.body;
+    let From = req.body.From; 
+    console.log("Selected User:" + From);
+    const To = req.body.To;
     var nodemailer = require("nodemailer");
     var mail = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       service: "gmail",
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
+        user: From.email,
+        pass: From.password
       },
     });
-    Object.entries(bodyData).forEach(([key, value]) => {
+    Object.entries(To).forEach(([key, value]) => {
       let deley = value.time;
       var mailOptions = {
-        from: process.env.Email,
+        from: From.email,
         to: value.id,
         subject: value.subject,
         html: value.mail
       };
+            
       setTimeout(function() {  
          mail.sendMail(mailOptions, function (error, info) {
           if (error) {

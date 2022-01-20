@@ -1,6 +1,6 @@
 import React from "react";
 import {  Route } from "react-router-dom";
-import Layout from './Layout';
+import Layout from './Components/Layout';
 import "./App.css";
 
 export default function App({ component: Component }) {

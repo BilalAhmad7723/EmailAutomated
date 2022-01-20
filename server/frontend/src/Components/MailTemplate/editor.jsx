@@ -7,7 +7,7 @@ import { useHistory } from "react-router-dom";
 import { useState } from "react";
 import "../MailTemplate/editor.css";
 import axios from "axios";
-import http from "../apiConfig";
+import http from "../../apiConfig";
 
 export default function MailEditor() {
 
@@ -17,8 +17,11 @@ export default function MailEditor() {
   const [data, setData] = useState({});
   const [loading, setloading] = useState(false);
   const [fileD, setfileD] = useState("");
+  const [active,setactive] = useState();
   const editorRef = useRef(null);
   const fileRef = useRef();
+
+
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]) && setIsFilePicked(true);
     if (isFilePicked) return;
@@ -45,10 +48,14 @@ export default function MailEditor() {
     } else setfileD("");
   };
 
-  const log = () => {
+  const sendmail = () => {
     setloading(true);
-    let data = FinalData(selectedFile);
-    if (data.length > 0) {
+    let receiver = FinalData(selectedFile);
+    let data = {
+      From : active,
+      To: receiver
+    }
+    if (receiver.length > 0) {
       axios
         .post("http://localhost:5050/email/emailSending", data)
         .then((res) => {
@@ -59,7 +66,7 @@ export default function MailEditor() {
         .catch((error) => {
           console.log(error);
           Notifyerrormsg("Mail Sending Failed!");
-          history.push("/error ");
+          history.push("/error");
         });
     }
 };
@@ -89,7 +96,7 @@ export default function MailEditor() {
         });
         return finalD;
       } else {
-        Notifyerrormsg("Please Write Some Maill in Text Area!!!");
+        Notifyerrormsg("Please Write Some Mail in Text Area!!!");
         return finalD;
       }
     } else {
@@ -99,17 +106,26 @@ export default function MailEditor() {
   };
 
   function RandomFunc(min, max) {
-    // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   useEffect(() => {
-    getData();
-  }, []);
+    get_Subject_Data();
+    get_selected_user();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);   
 
-  const getData = () => {
+  const get_selected_user = () => {
+     http.get(`/account/search-active`)
+       .then((data) => {
+         let obj = data.data[0];
+         setactive(obj);
+       })
+       .catch((err) => console.log(err));
+   }
+  const get_Subject_Data = () => {
     const headers = { "Content-Type": "application/json" };
-    const endpoint = "";
+    const endpoint = "/api";
     http
       .get(endpoint, { headers })
       .then((response) => {
@@ -121,7 +137,7 @@ export default function MailEditor() {
         console.log(error);
       });
   };
-  
+
   return (
     <Container fluid>
       <Spin spinning={loading}  tip="Sending Mail..." size="large">
@@ -136,7 +152,7 @@ export default function MailEditor() {
           <section>
             <div className="mb-3">
               <label htmlFor="From" className="form-label">
-                From:&nbsp;&nbsp;<span className="badge badge--secondary badge--small">bilalahmad7723@gmail.com</span>
+                From:&nbsp;&nbsp;<span className="badge badge--secondary badge--small">{active && active.email}</span>
               </label>
             </div>
           </section>
@@ -190,7 +206,7 @@ export default function MailEditor() {
                   className="form-control btn btn-primary submit px-3"
                   type="submit"
                   style={{ borderRadius: `10px` }}
-                  onClick={log}
+                  onClick={sendmail}
                 >
                   <SendOutlined style={{ verticalAlign: 0 }} /> Send
                 </Button>

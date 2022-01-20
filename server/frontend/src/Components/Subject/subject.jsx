@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import http from "../apiConfig";
+import http from "../../apiConfig";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -37,7 +37,7 @@ function Subject() {
       http.put('/api/update-subject/' + seldata._id, data)
       .then((res) => {
         console.log('Subject updated' + res)
-        refreshPage();
+        getData();
       }).catch((error) => {
         console.log(error)
       })
