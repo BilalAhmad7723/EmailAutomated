@@ -5,12 +5,13 @@ require("dotenv").config();
 router.route("/emailSending").post((req, res, next) => {
   try {
     let From = req.body.From; 
-    console.log("Selected User:" + From);
     const To = req.body.To;
     var nodemailer = require("nodemailer");
     var mail = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       service: "gmail",
+      port: 465,
+      secure: true,
       auth: {
         user: From.email,
         pass: From.password
@@ -24,7 +25,6 @@ router.route("/emailSending").post((req, res, next) => {
         subject: value.subject,
         html: value.mail
       };
-            
       setTimeout(function() {  
          mail.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -33,11 +33,10 @@ router.route("/emailSending").post((req, res, next) => {
             res.status(200).send({
               message: "Mails Sent Successfully!!!!",
             });
-            console.log("Email sent: " + info.response);
           }
         });
       }, parseInt(deley));
-
+      mail.close();
     });
   } catch (error) {
     res.set('Access-Control-Allow-Origin', '*');

@@ -57,6 +57,7 @@ export default function MailEditor() {
     }
     if (receiver.length > 0) {
       axios
+       // .post("http://localhost:5050/email/emailSending", data)
         .post("https://email-temp.herokuapp.com/email/emailSending", data)
         .then((res) => {
           setloading(false);
@@ -85,7 +86,7 @@ export default function MailEditor() {
       let text_data = editorRef.current.getContent();
       if (text_data !== "") {
         mailFromFile.forEach((element) => {
-          let rad = RandomFunc(2,9);
+          let rad = RandomFunc(4,9);
           let delay = rad.toString().concat("000");
           finalD.push({
             id: element,

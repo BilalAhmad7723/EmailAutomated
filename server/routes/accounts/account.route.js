@@ -3,7 +3,6 @@ let router = express.Router();
 
 let accountSchema = require('./account_schema');
 
-console.log("Accounts Routes Enable");
 
 router.route('/get-account').get((req, res, next) => {
   accountSchema.find((error, data) => {
