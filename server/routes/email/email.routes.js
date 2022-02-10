@@ -2,7 +2,7 @@ let express = require("express");
 let router = express.Router();
 require("dotenv").config();
 
-router.route("/emailSending").post((req, res, next) => {
+router.route("/send").post((req, res, next) => {
   try {
     let From = req.body.From; 
     const To = req.body.To;

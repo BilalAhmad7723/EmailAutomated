@@ -55,7 +55,7 @@ export default function MailEditor() {
       To: receiver
     }
     if (receiver.length > 0) {
-        http.post("/email/emailSending", data)
+        http.post("/email/send", data)
         .then((res) => {
           setloading(false);
           Notifymsg("Mails Has been send Successfully")
