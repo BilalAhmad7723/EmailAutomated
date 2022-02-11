@@ -30,10 +30,10 @@ router.route("/send").post((req, res, next) => {
           if (error) {
             console.log("error:" + error);
           } else {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.status(200).send({
-              message: "Mails Sent Successfully!!!!",
-            });
+            res.set('Access-Control-Allow-Origin', '*');
+            res.status(200).json({
+              msg: "Mail send Successfully!!"
+            })
           }
         });
       }, parseInt(deley));
@@ -41,7 +41,7 @@ router.route("/send").post((req, res, next) => {
     });
   } catch (error) {
     res.set('Access-Control-Allow-Origin', '*');
-    res.status(500).send({
+    res.status(500).json({
       message: "Data Could not received!",
     });
   }
