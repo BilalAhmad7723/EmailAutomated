@@ -30,6 +30,8 @@ router.route("/send").post((req, res, next) => {
           if (error) {
             console.log("error:" + error);
           } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Credentials', true);
             res.status(200).send({
               message: "Mails Sent Successfully!!!!",
             });
