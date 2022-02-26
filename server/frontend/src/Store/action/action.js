@@ -8,4 +8,10 @@ function SetEmail(value) {
   };
 }
 
-export {SetEmail}
+function Subjects(value) {
+  return {
+    type: "AllSubjects",
+    payload: value,
+  };
+}
+export {SetEmail ,Subjects}

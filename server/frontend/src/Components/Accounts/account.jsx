@@ -32,7 +32,17 @@ function Account() {
         if(data.status === "true") 
         {
          dispatch(SetEmail(data));
+         let logincredetials = localStorage.getItem('Login') ? JSON.parse(localStorage.getItem('Login')) : '';
+        if(logincredetials !== undefined || logincredetials !== null)
+        {
+          localStorage.removeItem('Login');
+          localStorage.setItem('Login', JSON.stringify(data));
         } 
+        else localStorage.setItem('Login', JSON.stringify(data));
+       } 
+       else {
+        localStorage.removeItem('Login');
+       }
         onUpdate(data);
         setModalShow(false);
       }
@@ -42,7 +52,17 @@ function Account() {
        if(data.status === "true") 
        {
         dispatch(SetEmail(data));
+        let logincredetials = localStorage.getItem('Login') ? JSON.parse(localStorage.getItem('Login')) : '';
+        if(logincredetials !== undefined || logincredetials !== null)
+        {
+          localStorage.removeItem('Login');
+          localStorage.setItem('Login', JSON.stringify(data));
+        } 
+        else localStorage.setItem('Login', JSON.stringify(data));
        } 
+       else {
+        localStorage.removeItem('Login');
+       }
        onUpdate(data);
        setModalShow(false);
      }
@@ -52,6 +72,7 @@ function Account() {
         http.put('/account/update-account/' + seldata._id, data)
         .then((res) => {
           console.log('Account updated' + res);
+         
           getData();
           // refreshPage();
         }).catch((error) => {
@@ -225,6 +246,7 @@ function Account() {
                >
                  <thead>
                    <tr>
+                     <th>#</th>
                      <th>Status</th>
                      <th>Account</th>
                      <th>Password</th>
@@ -236,6 +258,7 @@ function Account() {
                    {data.data.map(function (item, i) {
                      return (
                        <tr key={i}>
+                         <td>{i+1}</td>
                          <td >{item.status === false ? <CloseCircleTwoTone twoToneColor="#eb2f96"  /> : <CheckCircleTwoTone twoToneColor="#52c41a" />}</td>
                          <td>{item.email}</td>
                          <td>{item.password}</td>

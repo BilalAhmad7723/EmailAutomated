@@ -15,7 +15,7 @@ import subject from "./Components/Subject/subject";
 import account from "./Components/Accounts/account";
 import nomatch from "./Components/MailTemplate/nomatch";
 import { Provider } from "react-redux";
-import store from "./Store/store/store.js";
+import store from "./Store/store/store";
 
 ReactDOM.render(
   <Provider store={store}>

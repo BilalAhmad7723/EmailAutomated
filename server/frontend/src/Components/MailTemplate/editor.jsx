@@ -7,7 +7,6 @@ import { useHistory } from "react-router-dom";
 import { useState } from "react";
 import "../MailTemplate/editor.css";
 import http from "../../apiConfig";
-
 export default function MailEditor() {
 
   const history = useHistory();
@@ -19,8 +18,6 @@ export default function MailEditor() {
   const [active,setactive] = useState();
   const editorRef = useRef(null);
   const fileRef = useRef();
-
-
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]) && setIsFilePicked(true);
     if (isFilePicked) return;
@@ -84,10 +81,11 @@ export default function MailEditor() {
       if (text_data !== "") {
         mailFromFile.forEach((element) => {
           let rad = RandomFunc(4,9);
+          let subjectrad = RandomFunc(1,data.count);
           let delay = rad.toString().concat("000");
           finalD.push({
             id: element,
-            subject: data.data[rad].subject,
+            subject: data.data[subjectrad].subject,
             mail: text_data,
             time: delay,
           });
@@ -114,12 +112,18 @@ export default function MailEditor() {
   }, []);   
 
   const get_selected_user = () => {
-     http.get(`/account/search-active`)
-       .then((data) => {
-         let obj = data.data[0];
-         setactive(obj);
-       })
-       .catch((err) => console.log(err));
+
+    let obj = localStorage.getItem('Login') ? JSON.parse(localStorage.getItem('Login')) : '';
+    if(obj !== null)
+    {
+      setactive(obj);
+    }
+    //  http.get(`/account/search-active`)
+    //    .then((data) => {
+    //      let obj = data.data[0];
+    //      setactive(obj);
+    //    })
+    //    .catch((err) => console.log(err));
    }
   const get_Subject_Data = () => {
     const headers = { "Content-Type": "application/json" };
@@ -129,6 +133,7 @@ export default function MailEditor() {
       .then((response) => {
         setData({
           data: response.data,
+          count: response.data.length
         });
       })
       .catch((error) => {
@@ -147,13 +152,20 @@ export default function MailEditor() {
           <Row>
               <h2>Compose a New Mail:</h2>
             </Row>
+            { active !== "" ?
           <section>
             <div className="mb-3">
               <label htmlFor="From" className="form-label">
                 From:&nbsp;&nbsp;<span className="badge badge--secondary badge--small">{active && active.email}</span>
               </label>
             </div>
-          </section>
+          </section> : 
+                      <div className="mb-3">
+                      <label htmlFor="From" className="form-label">
+                      <span className="badge bg-success">Please Select Account from account Tab</span>
+                      </label>
+                    </div>
+          }
           <section>
             <div className="mb-3">
               <label htmlFor="formFile" className="form-label">
