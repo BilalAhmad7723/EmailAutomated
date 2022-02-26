@@ -53,7 +53,6 @@ router.route('/search-active').get((req, res, next) => {
   }
 })
 })
-
 router.route('/update-account/:id').put((req, res, next) => {
     accountSchema.findByIdAndUpdate(req.params.id, {
     $set: req.body

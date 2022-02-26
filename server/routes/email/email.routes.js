@@ -3,7 +3,7 @@ let router = express.Router();
 require("dotenv").config();
 
 router.route("/send").post((req, res, next) => {
-
+  try {
     let From = req.body.From; 
     const To = req.body.To;
     var nodemailer = require("nodemailer");
@@ -28,20 +28,31 @@ router.route("/send").post((req, res, next) => {
       setTimeout(function() {  
          mail.sendMail(mailOptions, function (error, info) {
           if (error) {
-            res.status(500).json({
-              message: "Data Could not received!",
-              error:error
-            });
+            console.log("error:" + error);
           } else {
             res.set('Access-Control-Allow-Origin', '*');
-            res.status(200).json({
-              msg: "Mail send Successfully!!"
-            })
+            res.header ('Access-Control-Allow-Origin', '*');
+            res.header ('Access-Control-Allow-Credentials', true);
+            res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+            res.header ('Access-Control-Allow-Headers', 'Content-Type');
+            res.status(200).send({
+              message: "Mails Sent Successfully!!!!",
+            });
           }
         });
       }, parseInt(deley));
       mail.close();
     });
+  } catch (error) {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.header ('Access-Control-Allow-Origin', '*');
+    res.header ('Access-Control-Allow-Credentials', true);
+    res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+    res.header ('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(500).send({
+      message: "Data Could not received!",
+    });
+  }
 });
 
 module.exports = router;

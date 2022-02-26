@@ -10,7 +10,11 @@ router.route('/').get((req, res, next) => {
         return next(error)
       } else {
         res.set('Access-Control-Allow-Origin', '*');
-        res.json(data)
+        res.header ('Access-Control-Allow-Origin', '*');
+        res.header ('Access-Control-Allow-Credentials', true);
+        res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+        res.header ('Access-Control-Allow-Headers', 'Content-Type');
+        res.json(data);
       }
     })
 })
@@ -22,6 +26,10 @@ router.route('/create-subject').post((req, res, next) => {
       return next(error)
     } else {
       res.set('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Credentials', true);
+      res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+      res.header ('Access-Control-Allow-Headers', 'Content-Type');
       res.json(data)
     }
   })
@@ -34,6 +42,10 @@ router.route('/edit-subject/:id').get((req, res, next) => {
       return next(error)
     } else {
       res.set('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Credentials', true);
+      res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+      res.header ('Access-Control-Allow-Headers', 'Content-Type');
       res.json(data)
     }
   })
@@ -48,6 +60,10 @@ router.route('/update-subject/:id').put((req, res, next) => {
       return next(error);
     } else {
       res.set('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Credentials', true);
+      res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+      res.header ('Access-Control-Allow-Headers', 'Content-Type');
       res.json(data);
     }
   })
@@ -59,6 +75,10 @@ router.route('/delete-subject/:id').delete((req, res, next) => {
       return next(error);
     } else {
       res.set('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Origin', '*');
+      res.header ('Access-Control-Allow-Credentials', true);
+      res.header ('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+      res.header ('Access-Control-Allow-Headers', 'Content-Type');
       res.status(200).json({
         msg: data
       })
