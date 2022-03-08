@@ -12,22 +12,25 @@ import {
   Modal,
 } from "react-bootstrap";
 import { CheckCircleTwoTone , CloseCircleTwoTone  } from "@ant-design/icons";
-import { Empty,Spin } from "antd";
+import { Empty,Spin,Select } from "antd";
 import { Popconfirm, message, Badge } from "antd";
 import { SetEmail } from "../../Store/action/action";
 
 function Account() {
+  const { Option } = Select;
     const dispatch = useDispatch();
     const [loading, setloading] = useState(false);
     const [modalShow, setModalShow] = useState(false);
     const [email, setemail] = useState("");
     const [pass, setpass] = useState("");
+    const [add_user, setuser] = useState("");
     const [data, setData] = useState({});
     const [seldata, setseldata] = useState({});
+    const [finaldata, setfinaldata] = useState();
     const {control, register, handleSubmit } = useForm();
 
     const onSubmit = (data) => {
-      if(data.email && data.password )
+      if(data.email && data.password && data.user)
       {
         if(data.status === "true") 
         {
@@ -71,9 +74,9 @@ function Account() {
     const onUpdate = (data) => {
         http.put('/account/update-account/' + seldata._id, data)
         .then((res) => {
-          console.log('Account updated' + res);
-         
+          console.log('Account updated' + res);         
           getData();
+          accountfilter(add_user);
           // refreshPage();
         }).catch((error) => {
           console.log(error)
@@ -144,6 +147,14 @@ function Account() {
                   </select>
                 </Col>
               </Row>
+              <Row>
+              <Col lg={12} sm={12} className="mb-3">
+              <select defaultValue="Select user" style={{ width: 175 }}  {...register("user")} >
+                  <option value="Arsalan">Arsalan</option>
+                  <option value="Salman">Salman</option>
+                </select>
+              </Col>
+            </Row>
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit">Update</Button>
@@ -152,6 +163,26 @@ function Account() {
           </form>
         </Modal>
       );
+    }
+    function selectuser(value) {
+      setuser(value);
+    }
+    function accountfilter(value) {
+      setuser(value);
+     let arr = [];
+     data.data.forEach(element => {
+       if(value !== "All") {
+       if(element.user === value)
+       {
+         arr.push(element);
+       }
+       setfinaldata(arr);
+      }
+      else {
+        arr.push(element);
+        setfinaldata(arr);
+      } 
+     });
     }
     function confirm(e) {
       http
@@ -169,11 +200,12 @@ function Account() {
       console.log(e);
       message.error("Click on No");
     }
-    const AddSubject = (event) => {
+    const AddAccount = (event) => {
       event.preventDefault();
       const accountD = {
         email: email,
         password: pass,
+        user:add_user,
         status: false,
       };
       console.log(accountD)
@@ -206,35 +238,49 @@ function Account() {
                <h3>Accounts:</h3>
              </Row>
              <Row>
-               <Form onSubmit={AddSubject}>
+               <Form onSubmit={AddAccount}>
                  <Row>
-                   <Col lg={5} sm={12} className="mb-3">
+                   <Col lg={4} sm={12} className="mb-3">
                      <Form.Control
-                       placeholder="Enter Email Address."
+                       placeholder="Email Address."
                        type="email"
                        value={email}
                        onChange={(e) => setemail(e.target.value)}
                      />
                    </Col>
-                   <Col lg={5} sm={12} className="mb-3">
+                   <Col lg={4} sm={12} className="mb-3">
                      <Form.Control
-                       placeholder="Enter Password."
+                       placeholder="Password."
                        type="text"
                        value={pass}
                        onChange={(e) => setpass(e.target.value)}
                      />
                    </Col>
                    <Col lg={2} sm={12}>
-                     <Button variant="primary" type="submit">
+                  <Select defaultValue="Select user" style={{ width: 175 }} onChange={selectuser} >
+                  <Option value="Arsalan">Arsalan</Option>
+                  <Option value="Salman">Salman</Option>
+                </Select>
+                  </Col>
+                   <Col lg={2} sm={12}  className="mx-auto">
+                     <Button variant="primary" type="submit" style={{width: `150px`, borderRadius: `30px`}}>
                        Add
                      </Button>
                    </Col>
                  </Row>
                </Form>
              </Row>
+             <Row>
+             <h3>Filter:</h3>
+             <Select defaultValue="Select user" style={{ width: 250,paddingRight: `0px` }}  onChange={accountfilter}>
+                 <Option value="All">All</Option>
+                  <Option value="Arsalan">Arsalan</Option>
+                  <Option value="Salman">Salman</Option>
+                </Select>
+             </Row>
            </section>
            <section>
-             {data.data ? (
+             {finaldata ? (
                <Table
                style={TStyle}
                  striped
@@ -250,18 +296,20 @@ function Account() {
                      <th>Status</th>
                      <th>Account</th>
                      <th>Password</th>
+                     <th>User</th>
                      <th>Edit</th>
                      <th>Delete</th>
                    </tr>
                  </thead>
                  <tbody>
-                   {data.data.map(function (item, i) {
+                   {finaldata.map(function (item, i) {
                      return (
                        <tr key={i}>
                          <td>{i+1}</td>
                          <td >{item.status === false ? <CloseCircleTwoTone twoToneColor="#eb2f96"  /> : <CheckCircleTwoTone twoToneColor="#52c41a" />}</td>
                          <td>{item.email}</td>
                          <td>{item.password}</td>
+                         <td>{item.user}</td>
                          <td>
                            <Button
                              variant="outline-success"

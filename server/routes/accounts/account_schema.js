@@ -11,6 +11,9 @@ let accountSchema = new Schema({
   status:{
     type: Boolean
   },
+  user:{
+    type: String
+  },
 }, {
     collection: 'Account',
     versionKey: false
